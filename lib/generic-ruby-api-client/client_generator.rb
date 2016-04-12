@@ -9,7 +9,7 @@ module GenericRubyApiClient
     attr_writer   :calls_file, :custom_attributes, :additional_http_query_params
 
     validates :klass_name, :calls_file, presence: true
-    #validate :ensure_klass_name_constantizable
+    validate :ensure_klass_name_constantizable
     validate :ensure_calls_file_exists
     validate :ensure_custom_attributes_is_an_array
     validate :ensure_path_prefix_validity, :if => "path_prefix.present?"
@@ -32,7 +32,12 @@ module GenericRubyApiClient
 
     def namespace
       return @generic_namespace if @generic_namespace.present?
-      @generic_namespace = Object.const_set(klass_name, Module.new)
+      if Object.const_defined?(klass_name)
+        @generic_namespace = Object.const_get(klass_name)
+      else
+        @generic_namespace = Object.const_set(klass_name, Module.new)
+      end
+
       @generic_namespace.module_exec do
         def self.configure
           yield(self::Configuration)
@@ -134,11 +139,15 @@ module GenericRubyApiClient
     end
 
     def ensure_klass_name_constantizable
-      errors.add(:klass_name, "cannot safely constantize") unless klass_name_constantizable?
+      errors.add(:klass_name, "cannot constantize") unless klass_name_constantizable?
     end
 
     def klass_name_constantizable?
-      klass_name.present? && klass_name.safe_constantize.present?
+      return false unless klass_name.present?
+      Object.const_defined?(klass_name)
+      true
+    rescue NameError => e
+      false
     end
 
     def ensure_calls_file_exists
