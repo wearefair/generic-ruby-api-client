@@ -10,17 +10,13 @@ module GenericRubyApiClient
 
     include ActiveModel::Validations
 
-    attr_accessor :host, :scheme #, :api_key
-
-    validates :host, :scheme, :presence => true #, :api_key
+    attr_accessor :host, :scheme
+    validates :host, :scheme, :presence => true
 
     def initialize(params = {})
       params.each do |k,v|
         send("#{k}=", v) if respond_to?("#{k}=")
       end
-      # self.host        = params[:host]
-      # self.scheme      = params[:scheme]
-      # self.api_key     = params[:api_key]
     end
 
     def fetch(params = {})

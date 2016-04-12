@@ -12,6 +12,7 @@ module GenericRubyApiClient
     #validate :ensure_klass_name_constantizable
     validate :ensure_calls_file_exists
     validate :ensure_custom_attributes_is_an_array
+    validate :ensure_path_prefix_validity, :if => "path_prefix.present?"
 
     def self.generate_client_library
       generator_instance = new
@@ -79,7 +80,9 @@ module GenericRubyApiClient
 
         const_set(:PATH_PREFIX, custom_agent_params[:prefix])
         def path_prefix
-          self.class::PATH_PREFIX
+          if self.class::PATH_PREFIX.present?
+            self.class::PATH_PREFIX.gsub(/:(\w+)/){|match| send($1)}
+          end
         end
 
         if custom_agent_params[:additional_http_query_params].any?
@@ -148,6 +151,14 @@ module GenericRubyApiClient
 
     def ensure_custom_attributes_is_an_array
       errors.add(:custom_attributes, "must be an array") unless custom_attributes.is_a? Array
+    end
+
+    def ensure_path_prefix_validity
+      errors.add(:path_prefix, "embedded attributes don't match custom attributes") unless path_prefix_variables_match_custom_attributes?
+    end
+
+    def path_prefix_variables_match_custom_attributes?
+      (path_prefix.scan(/:(\w+)/).flatten.map(&:to_sym) - custom_attributes).empty?
     end
 
   end
