@@ -53,7 +53,11 @@ module GenericRubyApiClient
     end
 
     def http_options
-      {headers: {'Content-Type' => 'application/json', 'Accept' => 'application/json'}}
+      { headers: headers }
+    end
+
+    def headers
+      {'Content-Type' => 'application/json', 'Accept' => 'application/json'}
     end
 
     def http_request(response, verb, uri, options, fields, should_parse)
