@@ -5,7 +5,7 @@ module GenericRubyApiClient
 
     include ActiveModel::Validations
 
-    attr_accessor :klass_name, :path_prefix
+    attr_accessor :klass_name, :path_prefix, :additional_headers
     attr_writer   :calls_file, :custom_attributes, :additional_http_query_params
 
     validates :klass_name, :calls_file, presence: true
@@ -90,6 +90,16 @@ module GenericRubyApiClient
           end
         end
 
+        const_set(:ADDITIONAL_HEADERS, custom_agent_params[:additional_headers])
+        def headers
+          if self.class::ADDITIONAL_HEADERS.present?
+            self.class::ADDITIONAL_HEADERS.each do |k,v|
+              self.class::ADDITIONAL_HEADERS[k] = v.gsub(/:(\w+)/){|match| send($1)}
+            end
+            super.merge(self.class::ADDITIONAL_HEADERS)
+          end
+        end
+
         if custom_agent_params[:additional_http_query_params].any?
           const_set(:ADDITIONAL_HTTP_QUERY_PARAMS, custom_agent_params[:additional_http_query_params])
           def additional_fields
@@ -106,7 +116,8 @@ module GenericRubyApiClient
       {
         prefix: path_prefix,
         custom_attributes: custom_attributes,
-        additional_http_query_params: additional_http_query_params
+        additional_http_query_params: additional_http_query_params,
+        additional_headers: additional_headers
       }
     end
 
@@ -127,11 +138,15 @@ module GenericRubyApiClient
     end
 
     def dasherize_name?
-      @dasherize_name ||= true
+      !(@dasherize_name == false)
     end
 
     def dasherize_name!
       @dasherize = true
+    end
+
+    def underscore_name!
+      @dasherize = false
     end
 
     def underscore_name?
