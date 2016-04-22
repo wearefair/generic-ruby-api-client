@@ -42,10 +42,6 @@ module GenericRubyApiClient
         def self.configure
           yield(self::Configuration)
         end
-
-        def self.root
-          File.dirname send("__dir__")
-        end
       end
       @generic_namespace
     end
