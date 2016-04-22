@@ -44,7 +44,7 @@ module GenericRubyApiClient
         end
 
         def self.root
-          File.dirname __dir__
+          File.dirname send("__dir__")
         end
       end
       @generic_namespace
