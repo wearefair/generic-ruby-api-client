@@ -122,7 +122,7 @@ module GenericRubyApiClient
     end
 
     def calls_file
-      @calls_file ||= File.join(directory_name, 'calls.rb')
+      @calls_file ||= File.join(gem_name, 'calls.rb')
     end
 
     def custom_attributes
@@ -133,8 +133,12 @@ module GenericRubyApiClient
       (@additional_http_query_params || []).map(&:with_indifferent_access)
     end
 
-    def directory_name
-      @directory_name ||= dasherize_name? ? klass_name.underscore.dasherize : klass_name.underscore
+    def gem_name
+      dasherize_name? ? klass_name.underscore.dasherize : klass_name.underscore
+    end
+
+    def full_path_directory_name
+      Gem::Specification.find_by_name(gem_name).gem_dir
     end
 
     def dasherize_name?
@@ -166,11 +170,11 @@ module GenericRubyApiClient
     end
 
     def ensure_calls_file_exists
-      errors.add(:call_file, "file missing") unless calls_file_exists?
+      errors.add(:call_file, "file missing -- Looked here #{File.join(full_path_directory_name,'lib',calls_file)}") unless calls_file_exists?
     end
 
     def calls_file_exists?
-      calls_file.present? && File.exist?(File.join('lib',calls_file))
+      calls_file.present? && File.exist?(File.join(full_path_directory_name,'lib',calls_file))
     end
 
     def ensure_custom_attributes_is_an_array
