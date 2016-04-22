@@ -174,7 +174,7 @@ module GenericRubyApiClient
     end
 
     def ensure_calls_file_exists
-      errors.add(:call_file, "file missing") unless calls_file_exists?
+      errors.add(:call_file, "file missing -- Looked here #{File.join(full_path_directory_name,'lib',calls_file)}") unless calls_file_exists?
     end
 
     def calls_file_exists?
