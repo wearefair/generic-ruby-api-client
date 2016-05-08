@@ -97,6 +97,8 @@ module GenericRubyApiClient
               self.class::ADDITIONAL_HEADERS[k] = v.gsub(/:(\w+)/){|match| send($1)}
             end
             super.merge(self.class::ADDITIONAL_HEADERS)
+          else
+            super
           end
         end
 
