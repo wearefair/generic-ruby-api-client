@@ -6,7 +6,7 @@ module GenericRubyApiClient
     include ActiveModel::Validations
 
     attr_accessor :klass_name, :path_prefix, :additional_headers
-    attr_writer   :calls_file, :custom_attributes, :additional_http_query_params
+    attr_writer   :calls_file, :custom_attributes, :additional_http_query_params, :gem_name
 
     validates :klass_name, :calls_file, presence: true
     validate :ensure_klass_name_constantizable
@@ -136,7 +136,7 @@ module GenericRubyApiClient
     end
 
     def gem_name
-      dasherize_name? ? klass_name.underscore.dasherize : klass_name.underscore
+      @gem_name ||= dasherize_name? ? klass_name.underscore.dasherize : klass_name.underscore
     end
 
     def full_path_directory_name
