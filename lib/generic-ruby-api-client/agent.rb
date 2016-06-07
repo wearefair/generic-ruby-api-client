@@ -32,12 +32,15 @@ module GenericRubyApiClient
         resp.errors.add(:action, "url path required")
       end
 
+      proxy = {}
+      proxy = http_proxy(params.fetch("proxy")) if params.has_key?(:proxy)
+
       return resp if resp.errors.any?
 
       should_parse = params.fetch(:should_parse, true)
       uri          = uri(action)
       fields       = params.fetch(:fields, {}).merge(additional_fields)
-      options      = http_options
+      options      = http_options.merge(proxy)
 
       http_request(resp, verb, uri, options, fields, should_parse)
     end
@@ -125,5 +128,14 @@ module GenericRubyApiClient
       {}
     end
 
+    def http_proxy(proxy)
+      uri = URI(proxy)
+      {
+        http_proxyaddr: uri.host,
+        http_proxyport: uri.port,
+        http_proxyuser: uri.user,
+        http_proxypass: uri.password
+      }
+    end
   end
 end
