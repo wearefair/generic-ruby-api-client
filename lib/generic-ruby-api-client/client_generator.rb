@@ -52,7 +52,7 @@ module GenericRubyApiClient
       @client_class.include(calls_module)
       @client_class.class_eval(<<-RUBY)
         def agent_init_attributes
-          super + #{custom_attributes}
+          super + #{agent_attributes}
         end
       RUBY
       @client_class
@@ -64,7 +64,7 @@ module GenericRubyApiClient
       @configuation_module.module_eval(<<-RUBY)
         include GenericConfiguration
         class << self
-          attr_accessor *#{custom_attributes}
+          attr_accessor *#{agent_attributes}
         end
       RUBY
       @configuation_module
@@ -81,6 +81,7 @@ module GenericRubyApiClient
       @agent_class = namespace.const_set "Agent", Class.new(Agent)
       @agent_class.class_exec(custom_agent_params) do |custom_agent_params|
         attr_accessor *custom_agent_params[:custom_attributes]         if custom_agent_params[:custom_attributes].any?
+        attr_accessor :proxy_uri                                       if custom_agent_params[:allow_http_proxy]
         validates_presence_of *custom_agent_params[:custom_attributes] if custom_agent_params[:custom_attributes].any?
 
         const_set(:PATH_PREFIX, custom_agent_params[:prefix])
@@ -102,6 +103,26 @@ module GenericRubyApiClient
           end
         end
 
+        if custom_agent_params[:allow_http_proxy]
+          def http_proxy
+            if proxy_uri.present?
+              uri = URI('http://' + proxy_uri) if !proxy_uri.include? 'http'
+                {
+                http_proxyaddr: uri.host,
+                http_proxyport: uri.port,
+                http_proxyuser: uri.user,
+                http_proxypass: uri.password
+              }
+            else
+              {}
+            end
+          end
+
+          def http_options
+            super.merge(http_proxy)
+          end
+        end
+
         if custom_agent_params[:additional_http_query_params].any?
           const_set(:ADDITIONAL_HTTP_QUERY_PARAMS, custom_agent_params[:additional_http_query_params])
           def additional_fields
@@ -119,7 +140,8 @@ module GenericRubyApiClient
         prefix: path_prefix,
         custom_attributes: custom_attributes,
         additional_http_query_params: additional_http_query_params,
-        additional_headers: additional_headers
+        additional_headers: additional_headers,
+        allow_http_proxy: allow_http_proxy?
       }
     end
 
@@ -129,6 +151,10 @@ module GenericRubyApiClient
 
     def custom_attributes
       (@custom_attributes || []).map(&:to_sym)
+    end
+
+    def agent_attributes
+      custom_attributes + (allow_http_proxy? ? [:proxy_uri] : [])
     end
 
     def additional_http_query_params
@@ -145,6 +171,14 @@ module GenericRubyApiClient
 
     def dasherize_name?
       !(@dasherize_name == false)
+    end
+
+    def allow_http_proxy!
+      @allow_http_proxy = true
+    end
+
+    def allow_http_proxy?
+      @allow_http_proxy == true
     end
 
     def dasherize_name!
