@@ -124,6 +124,5 @@ module GenericRubyApiClient
     def additional_fields
       {}
     end
-
   end
 end

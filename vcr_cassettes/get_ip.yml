@@ -1,0 +1,40 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://ip.quotaguard.com/
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - Cowboy
+      Connection:
+      - keep-alive
+      X-Powered-By:
+      - Express
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '21'
+      Etag:
+      - W/"15-397b447d"
+      Date:
+      - Thu, 09 Jun 2016 02:21:44 GMT
+      Via:
+      - 1.1 vegur
+    body:
+      encoding: UTF-8
+      string: '{"ip":"38.88.222.50"}'
+    http_version: 
+  recorded_at: Thu, 09 Jun 2016 02:21:44 GMT
+recorded_with: VCR 3.0.1
