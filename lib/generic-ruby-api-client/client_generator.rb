@@ -106,8 +106,12 @@ module GenericRubyApiClient
         if custom_agent_params[:allow_http_proxy]
           def http_proxy
             if proxy_uri.present?
-              uri = URI('http://' + proxy_uri) if !proxy_uri.include? 'http'
-                {
+              if proxy_uri.include? 'http'
+                uri = proxy_uri
+              else
+                uri = URI('http://' + proxy_uri)
+              end
+              {
                 http_proxyaddr: uri.host,
                 http_proxyport: uri.port,
                 http_proxyuser: uri.user,
