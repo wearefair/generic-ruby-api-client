@@ -89,5 +89,27 @@ describe GenericRubyApiClient::ClientGenerator do
         end
       }.to raise_error(NoMethodError, "undefined method `proxy_uri=' for NewService::Configuration:Module")
     end
+
+    it "should return proxy ip when using a proxy with http" do
+      VCR.use_cassette('get_proxy_ip_with_http') do
+        GenericRubyApiClient::ClientGenerator.generate_client_library do |client|
+          client.klass_name = "NewService"
+          client.path_prefix = ""
+          client.custom_attributes = [:api_key]
+          client.additional_headers = { }
+          client.allow_http_proxy!
+        end
+
+        NewService.configure do |config|
+          config.host      = "ip.quotaguard.com"
+          config.api_key   = "api_key"
+          config.scheme    = "http"
+        end
+
+        resp = NewService::Client.new(proxy_uri: "http://quotaguard5247:347ade991789@us-east-static-01.quotaguard.com:9293")
+        expect(resp.get.response).to eq({"ip"=>"50.17.160.202"} || {"ip"=>"52.86.18.14"} )
+      end
+    end
+
   end
 end

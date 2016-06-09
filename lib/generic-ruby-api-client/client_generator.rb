@@ -107,7 +107,7 @@ module GenericRubyApiClient
           def http_proxy
             if proxy_uri.present?
               if proxy_uri.include? 'http'
-                uri = proxy_uri
+                uri = URI(proxy_uri)
               else
                 uri = URI('http://' + proxy_uri)
               end
