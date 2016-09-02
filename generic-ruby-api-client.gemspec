@@ -3,11 +3,11 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
 require 'generic-ruby-api-client/version'
 
 Gem::Specification.new do |gem|
-  gem.authors               = ['Avant']
-  gem.email                 = ['dev@avant.com']
+  gem.authors               = ['Ryan']
+  gem.email                 = ['ryan.j.naughton@gmail.com']
   gem.description           = "interface to build quick api client libraries/gems for our microservices"
   gem.summary               = 'Generic Ruby API Client'
-  gem.homepage              = 'http://avant.com'
+  gem.homepage              = 'https://github.com/RyanNaughton/generic-ruby-api-client'
 
   gem.required_ruby_version = '>= 2.2.2'
   gem.files                 = `git ls-files`.split("\n")
