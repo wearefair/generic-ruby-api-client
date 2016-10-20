@@ -83,6 +83,7 @@ module GenericRubyApiClient
         attr_accessor *custom_agent_params[:custom_attributes]         if custom_agent_params[:custom_attributes].any?
         attr_accessor :proxy_uri                                       if custom_agent_params[:allow_http_proxy]
         validates_presence_of *custom_agent_params[:custom_attributes] if custom_agent_params[:custom_attributes].any?
+        default_timeout custom_agent_params[:timeout] if custom_agent_params[:timeout].present?
 
         const_set(:PATH_PREFIX, custom_agent_params[:prefix])
         def path_prefix
@@ -141,7 +142,8 @@ module GenericRubyApiClient
         custom_attributes: custom_attributes,
         additional_http_query_params: additional_http_query_params,
         additional_headers: additional_headers,
-        allow_http_proxy: allow_http_proxy?
+        allow_http_proxy: allow_http_proxy?,
+        timeout: timeout
       }
     end
 
@@ -179,6 +181,14 @@ module GenericRubyApiClient
 
     def allow_http_proxy?
       @allow_http_proxy == true
+    end
+
+    def timeout
+      @timeout_seconds
+    end
+
+    def timeout=(timeout_seconds)
+      @timeout_seconds = timeout_seconds
     end
 
     def dasherize_name!
