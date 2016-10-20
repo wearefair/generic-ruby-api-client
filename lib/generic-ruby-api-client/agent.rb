@@ -82,6 +82,8 @@ module GenericRubyApiClient
         response.errors.add(:socket, "Errno::EHOSTDOWN - The host at #{uri.scheme}://#{uri.host}/ is not responding to requests")
       rescue Errno::EHOSTUNREACH
         response.errors.add(:socket, "Errno::EHOSTUNREACH - Possible network issue communicating with #{uri.scheme}://#{uri.host}/")
+      rescue Timeout::Error => e
+        response.errors.add(:timeout, "Timeout::Error - #{e} with #{uri.scheme}://#{uri.host}/")
       rescue SocketError
         response.errors.add(:socket, "SocketError - Couldn't make sense of the host destination #{uri.scheme}://#{uri.host}/")
       rescue JSON::ParserError
