@@ -82,8 +82,8 @@ module GenericRubyApiClient
       @agent_class.class_exec(custom_agent_params) do |custom_agent_params|
         attr_accessor *custom_agent_params[:custom_attributes]         if custom_agent_params[:custom_attributes].any?
         attr_accessor :proxy_uri                                       if custom_agent_params[:allow_http_proxy]
+        attr_accessor :timeout                                         if custom_agent_params[:allow_custom_timeout]
         validates_presence_of *custom_agent_params[:custom_attributes] if custom_agent_params[:custom_attributes].any?
-        default_timeout custom_agent_params[:timeout] if custom_agent_params[:timeout].present?
 
         const_set(:PATH_PREFIX, custom_agent_params[:prefix])
         def path_prefix
@@ -118,9 +118,14 @@ module GenericRubyApiClient
               {}
             end
           end
+        end
 
+        if custom_agent_params[:allow_http_proxy] || custom_agent_params[:allow_custom_timeout]
           def http_options
-            super.merge(http_proxy)
+            options = super
+            options = options.merge(http_proxy) if self.respond_to?(:http_proxy)
+            options = options.merge({timeout: self.timeout}) if self.timeout
+            options
           end
         end
 
@@ -143,7 +148,7 @@ module GenericRubyApiClient
         additional_http_query_params: additional_http_query_params,
         additional_headers: additional_headers,
         allow_http_proxy: allow_http_proxy?,
-        timeout: timeout
+        allow_custom_timeout: allow_custom_timeout?
       }
     end
 
@@ -156,7 +161,7 @@ module GenericRubyApiClient
     end
 
     def agent_attributes
-      custom_attributes + (allow_http_proxy? ? [:proxy_uri] : [])
+      custom_attributes + (allow_http_proxy? ? [:proxy_uri] : []) + (allow_custom_timeout? ? [:timeout] : [])
     end
 
     def additional_http_query_params
@@ -183,12 +188,12 @@ module GenericRubyApiClient
       @allow_http_proxy == true
     end
 
-    def timeout
-      @timeout_seconds
+    def allow_custom_timeout!
+      @allow_custom_timeout = true
     end
 
-    def timeout=(timeout_seconds)
-      @timeout_seconds = timeout_seconds
+    def allow_custom_timeout?
+      @allow_custom_timeout == true
     end
 
     def dasherize_name!
