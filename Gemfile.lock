@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    generic-ruby-api-client (0.0.2)
+    generic-ruby-api-client (0.0.3)
       activemodel
       activesupport
       addressable

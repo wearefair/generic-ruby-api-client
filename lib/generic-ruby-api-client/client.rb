@@ -57,7 +57,7 @@ module GenericRubyApiClient
     end
 
     def agent_init_attributes
-      [:scheme, :host]
+      [:scheme, :host, :base_uri]
     end
 
   end

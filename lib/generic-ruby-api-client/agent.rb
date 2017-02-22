@@ -10,7 +10,7 @@ module GenericRubyApiClient
 
     include ActiveModel::Validations
 
-    attr_accessor :host, :scheme
+    attr_writer :host, :scheme
     validates :host, :scheme, :presence => true
 
     def initialize(params = {})
@@ -42,14 +42,28 @@ module GenericRubyApiClient
       http_request(resp, verb, uri, options, fields, should_parse)
     end
 
+    def base_uri=(base_uri)
+      @base_uri = Addressable::URI.parse(base_uri)
+    end
+
+    def base_uri
+      @base_uri ||= Addressable::URI.new({scheme: scheme, host: host})
+    end
+
+    def host
+      @host || base_uri.host
+    end
+
+    def scheme
+      @scheme || base_uri.scheme
+    end
+
     private
 
     def uri(action)
-      Addressable::URI.new({
-        :scheme => scheme,
-        :host   => host,
-        :path   => action
-      })
+      uri = base_uri.clone
+      uri.path = File.join(uri.path, action)
+      uri
     end
 
     def http_options

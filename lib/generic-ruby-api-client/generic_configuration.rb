@@ -6,7 +6,7 @@ module GenericRubyApiClient
 
     class_methods do
       def scheme
-        @scheme ||= 'https'
+        @scheme
       end
 
       def scheme=(scheme)
@@ -19,6 +19,14 @@ module GenericRubyApiClient
 
       def host
         @host
+      end
+
+      def base_uri
+        @base_uri
+      end
+
+      def base_uri=(base_uri)
+        @base_uri=base_uri
       end
 
       def expires_in
