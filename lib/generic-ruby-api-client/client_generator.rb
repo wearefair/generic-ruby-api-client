@@ -12,7 +12,7 @@ module GenericRubyApiClient
     validate :ensure_klass_name_constantizable
     validate :ensure_calls_file_exists
     validate :ensure_custom_attributes_is_an_array
-    validate :ensure_path_prefix_validity, :if => "path_prefix.present?"
+    validate :ensure_path_prefix_validity, if: -> { path_prefix.present? }
 
     def self.generate_client_library
       generator_instance = new
@@ -124,7 +124,7 @@ module GenericRubyApiClient
           def http_options
             options = super
             options = options.merge(http_proxy) if self.respond_to?(:http_proxy)
-            options = options.merge({timeout: self.timeout}) if self.timeout
+            options = options.merge({timeout: self.timeout}) if self.respond_to?(:timeout)
             options
           end
         end
