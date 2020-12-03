@@ -41,7 +41,7 @@ GEM
       ast (~> 2.2)
     powerpack (0.1.1)
     rainbow (2.1.0)
-    rake (10.4.2)
+    rake (13.0.1)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
       rspec-expectations (~> 3.4.0)
@@ -84,7 +84,7 @@ PLATFORMS
 DEPENDENCIES
   bundler-audit (~> 0.4.0)
   generic-ruby-api-client!
-  rake (~> 10.4.2)
+  rake (~> 13.0.1)
   rspec (~> 3.4.0)
   rubocop (~> 0.35.1)
   shoulda-matchers (~> 3.0)

@@ -6,7 +6,7 @@ gemspec
 group :development, :test do
   gem 'rspec', '~> 3.4.0'
   gem 'shoulda-matchers','~> 3.0'
-  gem 'rake', '~> 10.4.2'
+  gem 'rake', '~> 13.0.1'
   gem 'webmock', '~> 1.22.3'
   gem 'bundler-audit', '~> 0.4.0'
   gem 'rubocop', '~> 0.35.1'
