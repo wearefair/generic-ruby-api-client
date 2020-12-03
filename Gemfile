@@ -9,7 +9,7 @@ group :development, :test do
   gem 'rake', '~> 10.4.2'
   gem 'webmock', '~> 1.22.3'
   gem 'bundler-audit', '~> 0.4.0'
-  gem 'rubocop', '~> 0.35.1'
+  gem 'rubocop', '~> 0.68.1'
   gem 'vcr', '~> 3.0'
   gem 'timecop', '~> 0.8.0'
 end
